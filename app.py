@@ -1,22 +1,26 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
-import numpy as np
+import os
 
 app = Flask(__name__)
+CORS(app)
 
 # Load trained model
 model = joblib.load("diabetes_model.pkl")
 
 @app.route("/")
 def home():
-   return {"status": "API Running Successfully"}
+    return jsonify({
+        "status": "API Running Successfully"
+    })
 
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
         data = request.get_json()
 
-        features = [
+        features = [[
             float(data["pregnancies"]),
             float(data["glucose"]),
             float(data["bloodpressure"]),
@@ -25,11 +29,15 @@ def predict():
             float(data["bmi"]),
             float(data["dpf"]),
             float(data["age"])
-        ]
+        ]]
 
-        prediction = model.predict([features])
+        prediction = model.predict(features)
 
-        result = "Diabetes Detected" if prediction[0] == 1 else "No Diabetes"
+        result = (
+            "Diabetes Detected"
+            if prediction[0] == 1
+            else "No Diabetes"
+        )
 
         return jsonify({
             "prediction": result
@@ -38,16 +46,8 @@ def predict():
     except Exception as e:
         return jsonify({
             "error": str(e)
-        })
-
-if __name__ == "__main__":
-    import os
+        }), 400
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-@app.route("/")
-def home():
-    return {
-        "status": "API Running Successfully"
-    }
