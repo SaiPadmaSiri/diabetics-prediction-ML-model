@@ -9,7 +9,7 @@ model = joblib.load("diabetes_model.pkl")
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+   return {"status": "API Running Successfully"}
 
 @app.route("/predict", methods=["POST"])
 def predict():
