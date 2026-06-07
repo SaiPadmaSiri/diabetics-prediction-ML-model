@@ -49,5 +49,5 @@ if __name__ == "__main__":
 @app.route("/")
 def home():
     return {
-        "status": "API Running"
+        "status": "API Running Successfully"
     }
